@@ -18,7 +18,7 @@ package org.bigbluebutton.core
 		function failedToJoinVoiceConferenceCallback(msg:String):* 
 		function disconnectedFromJoinVoiceConferenceCallback(msg:String):*
 		function successfullyJoinedVoiceConferenceCallback(publishName:String, playName:String, codec:String):*		
-		function call(listenOnly:Boolean=false):void
+		function call():void
 		function hangUp():void 
 	}
 }

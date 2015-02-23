@@ -62,7 +62,7 @@ package org.bigbluebutton.command
 				voiceConnection.unsuccessConnected.add(mediaUnsuccessConnected);
 			}
 			else if (!voiceConnection.callActive) {
-				voiceConnection.call(_listenOnly);
+				voiceConnection.call();
 				voiceConnection.successConnected.add(mediaSuccessConnected);
 				voiceConnection.unsuccessConnected.add(mediaUnsuccessConnected);
 			}

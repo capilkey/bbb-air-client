@@ -50,7 +50,7 @@ package org.bigbluebutton.core
 		
 		private function onConnectionSuccess():void
 		{
-			call(userSession.userList.me.listenOnly);
+			call();
 		}
 		
 		public function get unsuccessConnected():ISignal
@@ -121,21 +121,20 @@ package org.bigbluebutton.core
 		//												//
 		//**********************************************//
 
-		public function call(listenOnly:Boolean=false):void
+		public function call():void
 		{
 			if (!callActive) {
-				trace(NAME + "::call(listenOnly:Boolean): starting voice call");
+				trace(NAME + "::call(): starting voice call");
 				baseConnection.connection.call(
 					"voiceconf.call",
 					new Responder(callOnSucess, callUnsucess),
 					"default",
 					_username,
-					_conferenceParameters.webvoiceconf,
-					listenOnly.toString()
+					_conferenceParameters.webvoiceconf
 				);
 			}
 			else {
-				trace(NAME + "::call(listenOnly:Boolean=false): voice call already active");
+				trace(NAME + "::call(): voice call already active");
 			}
 		}
 		

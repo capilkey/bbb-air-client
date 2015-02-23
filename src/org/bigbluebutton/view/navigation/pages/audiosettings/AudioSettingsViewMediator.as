@@ -33,8 +33,9 @@ package org.bigbluebutton.view.navigation.pages.audiosettings
 			var userMe:User = userSession.userList.me;
 			
 			view.shareMicButton.addEventListener(MouseEvent.CLICK, onShareMicClick);
-			view.listenOnlyButton.addEventListener(MouseEvent.CLICK, onListenOnlyClick);
-			view.listenOnlyButton.visible = !userMe.voiceJoined;
+			//view.listenOnlyButton.addEventListener(MouseEvent.CLICK, onListenOnlyClick);
+			//view.listenOnlyButton.visible = !userMe.voiceJoined;
+			view.listenOnlyButton.visible = false;
 			view.shareMicButton.visible=!userMe.listenOnly;
 			view.shareMicButton.label = ResourceManager.getInstance().getString('resources', userMe.voiceJoined ? 'audioSettings.shareMicrophone.off' : 'audioSettings.shareMicrophone.on');
 			view.listenOnlyButton.label = ResourceManager.getInstance().getString('resources', userMe.listenOnly ? 'audioSettings.listenOnly.off' : 'audioSettings.listenOnly.on');
@@ -69,14 +70,15 @@ package org.bigbluebutton.view.navigation.pages.audiosettings
 				view.listenOnlyButton.label = ResourceManager.getInstance().getString('resources', user.listenOnly ? 'audioSettings.listenOnly.off' : 'audioSettings.listenOnly.on');
 			}
 			view.shareMicButton.visible = !userSession.userList.me.listenOnly;
-			view.listenOnlyButton.visible = !userSession.userList.me.voiceJoined;
+			//view.listenOnlyButton.visible = !userSession.userList.me.voiceJoined;
+			view.shareMicButton.visible = false;
 		}	
 		
 		override public function destroy():void
 		{
 			super.destroy();
 			view.shareMicButton.removeEventListener(MouseEvent.CLICK, onShareMicClick);
-			view.listenOnlyButton.removeEventListener(MouseEvent.CLICK, onListenOnlyClick);
+			//view.listenOnlyButton.removeEventListener(MouseEvent.CLICK, onListenOnlyClick);
 		}
 	}
 }
