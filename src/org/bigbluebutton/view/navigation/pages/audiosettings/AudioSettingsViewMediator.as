@@ -71,7 +71,7 @@ package org.bigbluebutton.view.navigation.pages.audiosettings
 			}
 			view.shareMicButton.visible = !userSession.userList.me.listenOnly;
 			//view.listenOnlyButton.visible = !userSession.userList.me.voiceJoined;
-			view.shareMicButton.visible = false;
+			view.listenOnlyButton.visible = false;
 		}	
 		
 		override public function destroy():void
