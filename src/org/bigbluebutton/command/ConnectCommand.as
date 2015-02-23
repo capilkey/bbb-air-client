@@ -106,6 +106,9 @@ package org.bigbluebutton.command
 			
 			presentationService.connectPresent(uri);
 			
+			// recording status is only supported in 0.9.0 so set to false by default
+			userSession.recordingStatusChanged(false);
+			
 			connection.successConnected.remove(successConnected);
 			connection.unsuccessConnected.remove(unsuccessConnected);
 		}
