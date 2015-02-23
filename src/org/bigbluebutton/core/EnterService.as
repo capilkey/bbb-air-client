@@ -27,8 +27,7 @@ package org.bigbluebutton.core
 		}
 		
 		protected function onSuccess(data:Object, responseUrl:String, urlRequest:URLRequest):void {
-			var result : Object = JSON.parse(data as String);
-			successSignal.dispatch(result.response);
+			successSignal.dispatch(new XML(data));
 		}
 		
 		protected function onUnsuccess(reason:String):void {

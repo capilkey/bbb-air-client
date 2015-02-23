@@ -76,11 +76,11 @@ package org.bigbluebutton.core
 			enterSubservice.enter(config.application.host, _urlRequest);
 		}
 		
-		protected function afterEnter(result:Object):void {
+		protected function afterEnter(result:XML):void {
 			if (result.returncode == 'SUCCESS') {
 				trace("Join SUCCESS");
 				var user:Object = {
-					username:result.fullname, 
+						username:result.fullname, 
 						conference:result.conference, 
 						conferenceName:result.confname,
 						externMeetingID:result.externMeetingID,
@@ -103,9 +103,9 @@ package org.bigbluebutton.core
 				user.customdata = new Object();
 				if(result.customdata)
 				{
-					for (var key:String in result.customdata) {
-						trace("checking user customdata: "+key + " = " + result.customdata[key]);
-						user.customdata[key] = result.customdata[key].toString();
+					for each(var cdnode:XML in result.customdata.elements()){
+						trace("checking user customdata: "+cdnode.name() + " = " + cdnode);
+						user.customdata[cdnode.name()] = cdnode.toString();
 					}
 				}
 				

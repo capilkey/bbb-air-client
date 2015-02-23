@@ -8,6 +8,7 @@ package org.bigbluebutton.command
 	import org.bigbluebutton.core.IBigBlueButtonConnection;
 	import org.bigbluebutton.core.IChatMessageService;
 	import org.bigbluebutton.core.IDeskshareConnection;
+	import org.bigbluebutton.core.IDeskshareService;
 	import org.bigbluebutton.core.IPresentationService;
 	import org.bigbluebutton.core.IUsersService;
 	import org.bigbluebutton.core.IVideoConnection;
@@ -55,6 +56,9 @@ package org.bigbluebutton.command
 		[Inject]
 		public var presentationService: IPresentationService;
 		
+		[Inject]
+		public var deskshareService: IDeskshareService;
+		
 		override public function execute():void {
 			connection.uri = uri;
 			
@@ -64,73 +68,52 @@ package org.bigbluebutton.command
 			connection.connect(conferenceParameters);
 		}
 		
-		private function successConnected():void {			
+		private function successConnected():void {
 			Log.getLogger("org.bigbluebutton").info(String(this) + ":successConnected()");
 			
 			userSession.mainConnection = connection;
 			userSession.userId = connection.userId;
 			
-			// Set up users message sender in order to send the "joinMeeting" message:
-			usersService.setupMessageSenderReceiver();
+			usersService.connectUsers(uri);
 			
-			// Send the join meeting message, then wait for the reponse
-			userSession.successJoiningMeetingSignal.add(successJoiningMeeting);
-			userSession.unsuccessJoiningMeetingSignal.add(unsuccessJoiningMeeting);
-			
-			usersService.sendJoinMeetingMessage();
-			
-			connection.successConnected.remove(successConnected);
-			connection.unsuccessConnected.remove(unsuccessConnected);
-		}
-		
-		private function successJoiningMeeting():void {
-			
-			// Set up remaining message sender and receivers:
-			chatService.setupMessageSenderReceiver();
-			presentationService.setupMessageSenderReceiver();
-			
-			// set up and connect the remaining connections
 			videoConnection.uri = userSession.config.getConfigFor("VideoConfModule").@uri + "/" + conferenceParameters.room;
 			
+			//TODO use proper callbacks
 			//TODO see if videoConnection.successConnected is dispatched when it's connected properly
 			videoConnection.successConnected.add(successVideoConnected);
 			videoConnection.unsuccessConnected.add(unsuccessVideoConnected);
 			
 			videoConnection.connect();
-			
 			userSession.videoConnection = videoConnection;
 			
 			voiceConnection.uri = userSession.config.getConfigFor("PhoneModule").@uri;
 			userSession.voiceConnection = voiceConnection;
 			
+			usersService.connectListeners(uri);
+			
 			deskshareConnection.applicationURI = userSession.config.getConfigFor("DeskShareModule").@uri;
-			deskshareConnection.room = conferenceParameters.room;
 			deskshareConnection.connect();
 			
 			userSession.deskshareConnection = deskshareConnection;
-
-			// Query the server for chat, users, and presentation info
+			deskshareService.connectDeskshareSO();
+			
+			chatService.setupMessageSenderReceiver();
+			
 			chatService.sendWelcomeMessage();
 			chatService.getPublicChatMessages();
 			
-			presentationService.getPresentationInfo();
-
 			userSession.userList.allUsersAddedSignal.add(successUsersAdded);
-			usersService.queryForParticipants();
-			usersService.queryForRecordingStatus();
 			
-			userSession.successJoiningMeetingSignal.remove(successJoiningMeeting);
-			userSession.unsuccessJoiningMeetingSignal.remove(unsuccessJoiningMeeting);
-			usersService.getRoomLockState();
+			presentationService.connectPresent(uri);
+			
+			connection.successConnected.remove(successConnected);
+			connection.unsuccessConnected.remove(unsuccessConnected);
 		}
 		
-		private function unsuccessJoiningMeeting():void {
-			trace("ConnectCommand::unsuccessJoiningMeeting() -- Failed to join the meeting!!!");
-			
-			userSession.successJoiningMeetingSignal.remove(successJoiningMeeting);
-			userSession.unsuccessJoiningMeetingSignal.remove(unsuccessJoiningMeeting);
-		}
-		
+		/**
+		 * Raised when we receive signal from UserServiceSO.as that all participants were added. 
+		 * Now we can switch from loading screen to participants screen
+		 */
 		private function successUsersAdded():void
 		{
 			userUISession.loading = false;

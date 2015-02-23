@@ -49,6 +49,22 @@ package org.bigbluebutton.core
 		}
 		
 		private function getMyUserId():void {
+			baseConnection.connection.call(
+				"getMyUserId",// Remote function name
+				new Responder(
+					// result - On successful result
+					function(result:Object):void {
+						_userId = result as String;
+						successConnected.dispatch();
+					},
+					function(status:Object):void {
+						trace("Error occurred");
+						trace(ObjectUtil.toString(status));
+						unsuccessConnected.dispatch("Failed to get the userId");
+					}
+				)
+			);
+			/*
 			baseConnection.connection.call("participants.getMyUserId",
 				new Responder (
 					function(result:String):void {
@@ -62,7 +78,7 @@ package org.bigbluebutton.core
 						unsuccessConnected.dispatch("Failed to get the userId");
 					}
 				)
-			);
+			);*/
 		}
 		
 		public function get unsuccessConnected():ISignal

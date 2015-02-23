@@ -112,13 +112,13 @@ package org.bigbluebutton.model
 			verifyMedia();
 		}
 		
-		private var _voiceUserId:String;
-		public function get voiceUserId():String
+		private var _voiceUserId:Number;
+		public function get voiceUserId():Number
 		{
 			return _voiceUserId;
 		}
 		
-		public function set voiceUserId(value:String):void
+		public function set voiceUserId(value:Number):void
 		{
 			_voiceUserId = value;
 		}

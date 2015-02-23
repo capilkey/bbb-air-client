@@ -18,18 +18,16 @@ package org.bigbluebutton.model.presentation
 		private var _slideNum:Number;
 		private var _thumbURI:String;
 		private var _txtURI:String;
-		private var _current:Boolean;
 		private var _data:ByteArray;
 		private var _swfFile:SWFLoader = new SWFLoader();
 		
 		private var _slideLoadedSignal:ISignal = new Signal;
 		
-		public function Slide(slideNum:Number, slideURI:String, thumbURI:String, txtURI:String, current:Boolean) {
+		public function Slide(slideNum:Number, slideURI:String, thumbURI:String, txtURI:String) {
 			_slideNum = slideNum;
 			_slideURI = slideURI;
 			_thumbURI = thumbURI;
 			_txtURI = txtURI;
-			_current = current;
 		}
 		
 		public function get thumb():String {
@@ -74,14 +72,6 @@ package org.bigbluebutton.model.presentation
 		
 		public function get slideLoadedSignal():ISignal {
 			return _slideLoadedSignal;
-		}
-		
-		public function set current(b:Boolean):void {
-			_current = b;
-		}
-		
-		public function get current():Boolean {
-			return _current;
 		}
 	}
 }
