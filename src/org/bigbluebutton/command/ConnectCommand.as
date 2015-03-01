@@ -13,6 +13,7 @@ package org.bigbluebutton.command
 	import org.bigbluebutton.core.IUsersService;
 	import org.bigbluebutton.core.IVideoConnection;
 	import org.bigbluebutton.core.IVoiceConnection;
+	import org.bigbluebutton.core.IWhiteboardService;
 	import org.bigbluebutton.model.IConferenceParameters;
 	import org.bigbluebutton.model.IUserSession;
 	import org.bigbluebutton.model.IUserUISession;
@@ -55,6 +56,9 @@ package org.bigbluebutton.command
 		
 		[Inject]
 		public var presentationService: IPresentationService;
+		
+		[Inject]
+		public var whiteboardService: IWhiteboardService;
 		
 		[Inject]
 		public var deskshareService: IDeskshareService;
@@ -105,6 +109,8 @@ package org.bigbluebutton.command
 			userSession.userList.allUsersAddedSignal.add(successUsersAdded);
 			
 			presentationService.connectPresent(uri);
+			
+			whiteboardService.setupMessageSenderReceiver();
 			
 			// recording status is only supported in 0.9.0 so set to false by default
 			userSession.recordingStatusChanged(false);
