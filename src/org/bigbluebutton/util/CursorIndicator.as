@@ -8,11 +8,14 @@ package org.bigbluebutton.util
 	import spark.primitives.Ellipse;
 	import spark.primitives.supportClasses.GraphicElement;
 	
-	public class CursorIndicator extends GraphicElement
+	public class CursorIndicator
 	{
 		private static var SIZE:Number = 10;
 		private static var COLOR:uint = 0xFF0000;
 		private static var ALPHA:Number = 0.6;
+		
+		private var _x:Number = -1;
+		private var _y:Number = -1;
 		
 		private var _indicator:Ellipse;
 		
@@ -21,10 +24,13 @@ package org.bigbluebutton.util
 			super();
 		}
 		
-		public function update(canvas:IWhiteboardCanvas, newX:Number, newY:Number):void {
+		public function draw(canvas:IWhiteboardCanvas, newX:Number, newY:Number):void {
 			if (!_indicator) {
 				_indicator = new Ellipse();
 			}
+			
+			_x = newX;
+			_y = newY;
 			
 			_indicator.stroke = new SolidColorStroke(COLOR, 1, ALPHA);
 			_indicator.fill = new SolidColor(COLOR, ALPHA);
@@ -38,6 +44,10 @@ package org.bigbluebutton.util
 			} else if (!canvas.containsElement(_indicator)) {
 				canvas.addElement(_indicator);
 			}
+		}
+		
+		public function redraw(canvas:IWhiteboardCanvas):void {
+			draw(canvas, _x, _y);
 		}
 		
 		public function remove(canvas:IWhiteboardCanvas):void {

@@ -58,13 +58,15 @@ package org.bigbluebutton.view.navigation.pages.whiteboard
 		}
 		
 		private function cursorUpdateHandler(xPercent:Number, yPercent:Number):void {
-			_cursor.update(view, xPercent, yPercent);
+			_cursor.draw(view, xPercent, yPercent);
 		}
 		
 		private function onWhiteboardResize(zoom:Number):void {
 			trace("whiteboard zoom = " + zoom);
 			_zoom = zoom;
 			drawAllAnnotations();
+			
+			_cursor.redraw(view);
 		}
 		
 		private function drawAllAnnotations():void {
