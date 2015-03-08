@@ -1,11 +1,14 @@
 package org.bigbluebutton.core
 {
 	import org.bigbluebutton.model.IMessageListener;
+	import org.bigbluebutton.model.IUserSession;
 	
-	public class PresentMessageReceiver implements IPresentMessageReceiver, IMessageListener
+	public class PresentMessageReceiver implements IMessageListener
 	{
-		public function PresentMessageReceiver()
-		{
+		private var _userSession:IUserSession;
+		
+		public function PresentMessageReceiver(userSession:IUserSession) {
+			_userSession = userSession;
 		}
 		
 		public function onMessage(messageName:String, message:Object):void {
@@ -18,14 +21,7 @@ package org.bigbluebutton.core
 		}  
 		
 		private function handlePresentationCursorUpdateCommand(message:Object):void {
-			//trace("cursorUpdateCommand received");
-			/*
-			var e:CursorEvent = new CursorEvent(CursorEvent.UPDATE_CURSOR);
-			e.xPercent = message.xPercent;
-			e.yPercent = message.yPercent;
-			var dispatcher:Dispatcher = new Dispatcher();
-			dispatcher.dispatchEvent(e);
-			*/
+			_userSession.presentationList.cursorUpdate(message.xPercent, message.yPercent);
 		}
 	}
 }

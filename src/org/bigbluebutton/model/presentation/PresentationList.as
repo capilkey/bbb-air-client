@@ -17,6 +17,8 @@ package org.bigbluebutton.model.presentation
 		private var _presentationChangeSignal:ISignal = new Signal();
 		private var _slideChangeSignal:ISignal = new Signal();
 		
+		private var _cursorUpdateSignal:ISignal = new Signal();
+		
 		private var _annotationHistorySignal:ISignal = new Signal();
 		private var _annotationUpdatedSignal:ISignal = new Signal();
 		private var _annotationUndoSignal:ISignal = new Signal();
@@ -53,6 +55,12 @@ package org.bigbluebutton.model.presentation
 				}
 			}
 			return null;
+		}
+		
+		public function cursorUpdate(xPercent:Number, yPercent:Number):void {
+			if (_currentPresentation != null && _currentSlideNum >= 0) {
+				_cursorUpdateSignal.dispatch(xPercent, yPercent);
+			}
 		}
 		
 		public function addAnnotationHistory(presentationID:String, pageNumber:int, annotationArray:Array):void {
@@ -123,6 +131,10 @@ package org.bigbluebutton.model.presentation
 		
 		public function get slideChangeSignal():ISignal {
 			return _slideChangeSignal;
+		}
+		
+		public function get cursorUpdateSignal():ISignal {
+			return _cursorUpdateSignal;
 		}
 		
 		public function get annotationHistorySignal():ISignal {

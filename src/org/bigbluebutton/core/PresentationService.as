@@ -10,13 +10,12 @@ package org.bigbluebutton.core
 		public var presentServiceSO : IPresentServiceSO;
 		
 		[Inject]
-		public var presentMessageReceiver : IPresentMessageReceiver;
-		
-		[Inject]
 		public var conferenceParameters: IConferenceParameters;
 		
 		[Inject]
 		public var userSession: IUserSession;
+		
+		private var _presentMessageReceiver:PresentMessageReceiver;
 		
 		public function PresentationService()
 		{
@@ -24,12 +23,13 @@ package org.bigbluebutton.core
 		
 		public function connectPresent(uri:String):void {
 			presentServiceSO.connect(userSession.mainConnection.connection, uri, conferenceParameters);
-			userSession.mainConnection.addMessageListener(presentMessageReceiver as IMessageListener);
+			_presentMessageReceiver = new PresentMessageReceiver(userSession);
+			userSession.mainConnection.addMessageListener(_presentMessageReceiver as IMessageListener);
 		}
 		
 		public function disconnect():void {
 			presentServiceSO.disconnect();
-			userSession.mainConnection.removeMessageListener(presentMessageReceiver as IMessageListener);
+			userSession.mainConnection.removeMessageListener(_presentMessageReceiver as IMessageListener);
 		}
 	}
 }
