@@ -19,8 +19,8 @@ package org.bigbluebutton.core
 		}
 		
 		public function setupMessageSenderReceiver():void {
-			whiteboardMessageSender = new WhiteboardMessageSender();//userSession);
-			whiteboardMessageReceiver = new WhiteboardMessageReceiver();//userSession);
+			whiteboardMessageSender = new WhiteboardMessageSender(userSession);
+			whiteboardMessageReceiver = new WhiteboardMessageReceiver(userSession);
 			
 			userSession.mainConnection.addMessageListener(whiteboardMessageReceiver as IMessageListener);
 		}

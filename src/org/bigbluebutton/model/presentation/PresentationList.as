@@ -2,21 +2,13 @@ package org.bigbluebutton.model.presentation
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.bigbluebutton.model.ConferenceParameters;
-	import org.bigbluebutton.model.IConferenceParameters;
-	import org.bigbluebutton.model.IUserSession;
-	import org.bigbluebutton.model.UserSession;
+	import org.bigbluebutton.model.whiteboard.IAnnotation;
+	import org.flexunit.internals.namespaces.classInternal;
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
 	
 	public class PresentationList
 	{
-		[Inject]
-		public var userSession:IUserSession;
-		
-		[Inject]
-		public var conferenceParameters:IConferenceParameters;
-		
 		private var _presentations:ArrayCollection = new ArrayCollection();
 		
 		private var _currentPresentation:Presentation;
@@ -24,6 +16,11 @@ package org.bigbluebutton.model.presentation
 		
 		private var _presentationChangeSignal:ISignal = new Signal();
 		private var _slideChangeSignal:ISignal = new Signal();
+		
+		private var _annotationHistorySignal:ISignal = new Signal();
+		private var _annotationUpdatedSignal:ISignal = new Signal();
+		private var _annotationUndoSignal:ISignal = new Signal();
+		private var _annotationClearSignal:ISignal = new Signal();
 		
 		public function PresentationList() {
 		}
@@ -58,6 +55,43 @@ package org.bigbluebutton.model.presentation
 			return null;
 		}
 		
+		public function addAnnotationHistory(presentationID:String, pageNumber:int, annotationArray:Array):void {
+			var presentation:Presentation = getPresentation(presentationID);
+			if (presentation != null) {
+				if (presentation.addAnnotationHistory(pageNumber, annotationArray)) {
+					if (presentation == _currentPresentation && pageNumber == _currentSlideNum) {
+						_annotationHistorySignal.dispatch();
+					}
+				}
+			}
+		}
+		
+		public function addAnnotation(annotation:IAnnotation):void {
+			var presentation:Presentation = getPresentation(annotation.presentationID);
+			if (presentation != null) {
+				var newAnnotation:IAnnotation = presentation.addAnnotation(annotation.pageNumber, annotation);
+				if (newAnnotation != null && presentation == _currentPresentation && annotation.pageNumber == _currentSlideNum) {
+					_annotationUpdatedSignal.dispatch(newAnnotation);
+				}
+			}
+		}
+		
+		public function clearAnnotations():void {
+			if (_currentPresentation != null && _currentSlideNum >= 0) {
+				_currentPresentation.getSlideAt(_currentSlideNum).clearAnnotations();
+				_annotationClearSignal.dispatch();
+			}
+		}
+		
+		public function undoAnnotation():void {
+			if (_currentPresentation != null && _currentSlideNum >= 0) {
+				var removedAnnotation:IAnnotation = _currentPresentation.getSlideAt(_currentSlideNum).undoAnnotation();
+				if (removedAnnotation != null) {
+					_annotationUndoSignal.dispatch(removedAnnotation);
+				}
+			}
+		}
+		
 		private function changeCurrentPresentation(p:Presentation):void {
 			currentPresentation = p;
 		}
@@ -89,6 +123,22 @@ package org.bigbluebutton.model.presentation
 		
 		public function get slideChangeSignal():ISignal {
 			return _slideChangeSignal;
+		}
+		
+		public function get annotationHistorySignal():ISignal {
+			return _annotationHistorySignal;
+		}
+		
+		public function get annotationUpdatedSignal():ISignal {
+			return _annotationUpdatedSignal;
+		}
+		
+		public function get annotationUndoSignal():ISignal {
+			return _annotationUndoSignal;
+		}
+		
+		public function get annotationClearSignal():ISignal {
+			return _annotationClearSignal;
 		}
 	}
 }

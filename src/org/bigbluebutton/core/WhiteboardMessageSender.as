@@ -1,12 +1,18 @@
 package org.bigbluebutton.core
 {
+	import org.bigbluebutton.model.IUserSession;
+
 	public class WhiteboardMessageSender
 	{
 		private static var LOG:String = "WhiteboardMessageSender - ";
 		
-		public var userSession:IUserSession;
+		private var userSession:IUserSession;
 		
-		public function changePage(pageNum:Number):void{
+		public function WhiteboardMessageSender(userSession:IUserSession) {
+			this.userSession = userSession;
+		}
+		
+		public function changePage(pageNum:Number):void {
 			//			LogUtil.debug("Sending [whiteboard.setActivePage] to server.");
 			/*
 			var message:Object = new Object();
@@ -96,13 +102,12 @@ package org.bigbluebutton.core
 			msg["presentationID"] = presentationID;
 			msg["pageNumber"] = pageNumber;
 			
-			var _nc:ConnectionManager = BBB.initConnectionManager();
-			_nc.sendMessage("whiteboard.requestAnnotationHistory", 
+			userSession.mainConnection.sendMessage("whiteboard.requestAnnotationHistory", 
 				function(result:String):void { // On successful result
-					LogUtil.debug(result); 
+					trace(result); 
 				},	                   
 				function(status:String):void { // status - On error occurred
-					LogUtil.error(status); 
+					trace(status); 
 				},
 				msg
 			);

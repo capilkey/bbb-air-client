@@ -1,13 +1,18 @@
 package org.bigbluebutton.core
 {
 	import org.bigbluebutton.model.IMessageListener;
+	import org.bigbluebutton.model.IUserSession;
+	import org.bigbluebutton.model.whiteboard.IAnnotation;
+	import org.bigbluebutton.util.AnnotationUtil;
 
 	public class WhiteboardMessageReceiver implements IMessageListener
 	{
 		private static var LOG:String = "WhiteboardMessageReciever - ";
 		
-		public function WhiteboardMessageReceiver() {
-			
+		private var _userSession:IUserSession;
+		
+		public function WhiteboardMessageReceiver(userSession:IUserSession) {
+			_userSession = userSession;
 		}
 		
 		public function onMessage(messageName:String, message:Object):void {
@@ -52,11 +57,11 @@ package org.bigbluebutton.core
 		}
 		
 		private function handleClearCommand(message:Object):void {
-//			whiteboardModel.clear();
+			_userSession.presentationList.clearAnnotations();
 		}
 		
 		private function handleUndoCommand(message:Object):void {
-//			whiteboardModel.undo();
+			_userSession.presentationList.undoAnnotation();
 		}
 		
 		private function handleEnableWhiteboardCommand(message:Object):void {
@@ -64,15 +69,15 @@ package org.bigbluebutton.core
 		}
 		
 		private function handleNewAnnotationCommand(message:Object):void {
-			if (message.type == undefined || message.type == null || message.type == "") return;
-			if (message.id == undefined || message.id == null || message.id == "") return;
-			if (message.status == undefined || message.status == null || message.status == "") return;
-			
 			trace(LOG + "handleNewAnnotationCommand received");
+			AnnotationUtil.createAnnotation(message);
 			
-//			var annotation:Annotation = new Annotation(message.id, message.type, message);
-//			annotation.status = message.status;
-//			whiteboardModel.addAnnotation(annotation);
+			var tempAnnotation:IAnnotation = AnnotationUtil.createAnnotation(message);
+			if (tempAnnotation != null) {
+				_userSession.presentationList.addAnnotation(tempAnnotation);
+			} else {
+				trace(LOG + "handleAnnotationHistoryReply: Annotation with id: " + message.id + " is invalid");
+			}
 		}
 		
 		private function handleIsWhiteboardEnabledReply(message:Object):void {
@@ -90,19 +95,16 @@ package org.bigbluebutton.core
 				for (var i:int = 0; i < message.count; i++) {
 					var an:Object = annotations[i] as Object;
 					
-					if (an.type == undefined || an.type == null || an.type == "") return;
-					if (an.id == undefined || an.id == null || an.id == "") return;
-					if (an.status == undefined || an.status == null || an.status == "") return;
-					
-					//LogUtil.debug("handleRequestAnnotationHistoryReply: annotation id=" + an.id);
-					
-		//			var annotation:Annotation = new Annotation(an.id, an.type, an);
-		//			annotation.status = an.status;
-		//			tempAnnotations.push(annotation);
+					var tempAnnotation:IAnnotation = AnnotationUtil.createAnnotation(an);
+					if (tempAnnotation != null) {
+						tempAnnotations.push(tempAnnotation);
+					} else {
+						trace(LOG + "handleAnnotationHistoryReply: Annotation with id: " + an.id + " is invalid");
+					}
 				}   
 				
 				if (tempAnnotations.length > 0) {
-		//			whiteboardModel.addAnnotationFromHistory(message.presentationID, message.pageNumber, tempAnnotations);
+					_userSession.presentationList.addAnnotationHistory(message.presentationID, message.pageNumber-1, tempAnnotations);
 				}
 			}
 		}

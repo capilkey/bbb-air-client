@@ -50,6 +50,7 @@
 			import org.bigbluebutton.view.navigation.pages.selectparticipant.SelectParticipantConfig;
 			import org.bigbluebutton.view.navigation.pages.userdetails.UserDetaisConfig;
 			import org.bigbluebutton.view.navigation.pages.videochat.VideoChatConfig;
+      import org.bigbluebutton.view.navigation.pages.whiteboard.WhiteboardConfig;
 			import org.bigbluebutton.view.ui.MicButtonConfig;
 			import org.bigbluebutton.view.ui.NavigationButtonConfig;
 			import org.bigbluebutton.view.ui.RecordingStatusConfig;
@@ -129,7 +130,8 @@
 					.configure(RecordingStatusConfig)
 					.configure(CameraSettingsConfig)
 					.configure(AudioSettingsConfig)
-					
+					.configure(WhiteboardConfig)
+          
 					.configure(new ContextView(this));
 				
 				// If you wish to change the log level then uncomment the line below and set 

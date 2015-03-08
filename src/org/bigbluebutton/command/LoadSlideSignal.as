@@ -7,7 +7,7 @@ package org.bigbluebutton.command
 	{
 		public function LoadSlideSignal()
 		{
-			super(Slide);
+			super(Slide, String);
 		}
 	}
 }

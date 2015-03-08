@@ -1,13 +1,10 @@
 package org.bigbluebutton.model.presentation
 {
-	import flash.events.Event;
-	import flash.net.URLLoader;
-	import flash.net.URLLoaderDataFormat;
-	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
 	
 	import mx.controls.SWFLoader;
 	
+	import org.bigbluebutton.model.whiteboard.IAnnotation;
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
 
@@ -20,6 +17,7 @@ package org.bigbluebutton.model.presentation
 		private var _txtURI:String;
 		private var _data:ByteArray;
 		private var _swfFile:SWFLoader = new SWFLoader();
+		private var _annotations:Array = [];
 		
 		private var _slideLoadedSignal:ISignal = new Signal;
 		
@@ -72,6 +70,41 @@ package org.bigbluebutton.model.presentation
 		
 		public function get slideLoadedSignal():ISignal {
 			return _slideLoadedSignal;
+		}
+		
+		public function get annotations():Array {
+			return _annotations;
+		}
+		
+		public function addAnnotation(annotation:IAnnotation):void {
+			trace("adding a new annotation");
+			_annotations.push(annotation);
+		}
+		
+		public function updateAnnotation(annotation:IAnnotation):IAnnotation {
+			for (var i:int = 0; i < _annotations.length; i++) {
+				if ((_annotations[i] as IAnnotation).anID == annotation.anID) {
+					_annotations[i].update(annotation);
+					trace("updating an existing annotation");
+					return _annotations[i];
+				}
+			}
+			// if the annotation can't be found then add it instead
+			addAnnotation(annotation);
+			return annotation;
+		}
+		
+		public function undoAnnotation():IAnnotation {
+			if (_annotations.length > 0) {
+				return _annotations.pop();
+			}
+			return null;
+		}
+		
+		public function clearAnnotations():void {
+			while (_annotations.length > 0) {
+				_annotations.pop();
+			}
 		}
 	}
 }

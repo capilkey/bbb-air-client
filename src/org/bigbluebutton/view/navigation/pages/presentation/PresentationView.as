@@ -8,28 +8,43 @@ package org.bigbluebutton.view.navigation.pages.presentation
 	import flash.events.MouseEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.StageOrientationEvent;
+	import flash.geom.Point;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 	import flash.utils.ByteArray;
 	
+	import mx.controls.SWFLoader;
 	import mx.core.FlexGlobals;
 	import mx.resources.ResourceManager;
 	
 	import org.bigbluebutton.model.presentation.Slide;
+	import org.bigbluebutton.view.navigation.pages.whiteboard.WhiteboardCanvas;
 	
+	import spark.components.Group;
 	import spark.components.Image;
 	
 	
 	public class PresentationView extends PresentationViewBase implements IPresentationView
-	{		
+	{
 		override protected function childrenCreated():void
 		{
 			super.childrenCreated();
 		}
 		
-		public function onClick(e:MouseEvent):void
-		{
-			//buttonTestSignal.dispatch();
+		public function get content():Group {
+			return content0;
+		}
+		
+		public function get viewport():Group {
+			return viewport0;
+		}
+		
+		public function get slide():SWFLoader {
+			return slide0;
+		}
+		
+		public function get whiteboardCanvas():WhiteboardCanvas {
+			return whiteboardCanvas0;
 		}
 		
 		public function setPresentationName(name:String):void {
@@ -73,7 +88,7 @@ package org.bigbluebutton.view.navigation.pages.presentation
 		
 		public function dispose():void
 		{
-
+			
 		}
 		
 	}

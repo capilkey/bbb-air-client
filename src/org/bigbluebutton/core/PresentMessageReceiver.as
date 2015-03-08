@@ -18,7 +18,7 @@ package org.bigbluebutton.core
 		}  
 		
 		private function handlePresentationCursorUpdateCommand(message:Object):void {
-			trace("cursorUpdateCommand received");
+			//trace("cursorUpdateCommand received");
 			/*
 			var e:CursorEvent = new CursorEvent(CursorEvent.UPDATE_CURSOR);
 			e.xPercent = message.xPercent;

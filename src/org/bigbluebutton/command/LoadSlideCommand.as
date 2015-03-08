@@ -1,5 +1,6 @@
 package org.bigbluebutton.command
 {
+	import org.bigbluebutton.core.IWhiteboardService;
 	import org.bigbluebutton.core.LoadSlideService;
 	import org.bigbluebutton.model.presentation.Slide;
 	
@@ -9,6 +10,12 @@ package org.bigbluebutton.command
 	{
 		[Inject]
 		public var slide: Slide;
+		
+		[Inject]
+		public var presentationName: String;
+		
+		[Inject]
+		public var whiteboardService: IWhiteboardService;
 		
 		private var _loadSlideService:LoadSlideService;
 		
@@ -20,6 +27,8 @@ package org.bigbluebutton.command
 		override public function execute():void {
 			if (slide != null) {
 				_loadSlideService = new LoadSlideService(slide);
+				
+				whiteboardService.getAnnotationHistory(presentationName, slide.slideNumber);
 			} else {
 				trace("LoadSlideCommand: requested slide is null and cannot be loaded");
 			}
