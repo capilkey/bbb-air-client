@@ -4,7 +4,7 @@ package org.bigbluebutton.model.whiteboard
 	
 	import spark.primitives.supportClasses.GraphicElement;
 
-	public class Annotation extends GraphicElement implements IAnnotation {
+	public class Annotation implements IAnnotation {
 		private var _type:String = "undefined";
 		private var _anID:String = "undefined";
 		private var _presentationID:String;

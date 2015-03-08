@@ -4,7 +4,7 @@ package org.bigbluebutton.model.whiteboard
 	
 	import spark.components.RichText;
 
-	public class TextAnnotation extends RichText implements IAnnotation {
+	public class TextAnnotation implements IAnnotation {
 		private var _type:String = "undefined";
 		private var _anID:String = "undefined";
 		private var _presentationID:String;
