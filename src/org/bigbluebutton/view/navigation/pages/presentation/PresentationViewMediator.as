@@ -2,6 +2,7 @@ package org.bigbluebutton.view.navigation.pages.presentation
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.geom.Point;
 	
 	import mx.core.FlexGlobals;
 	
@@ -35,6 +36,7 @@ package org.bigbluebutton.view.navigation.pages.presentation
 			
 			userSession.presentationList.presentationChangeSignal.add(presentationChangeHandler);
 			userSession.presentationList.slideChangeSignal.add(slideChangeHandler);
+			userSession.presentationList.viewedRegionChangeSignal.add(viewedRegionChangeHandler);
 			
 			view.slide.addEventListener(Event.COMPLETE, handleLoadingComplete);
 			
@@ -66,20 +68,27 @@ package org.bigbluebutton.view.navigation.pages.presentation
 			}
 		}
 		
-		private function handleLoadingComplete(e:Event):void {
-			_slideModel.resetForNewSlide(view.slide.contentWidth, view.slide.contentHeight);
-			
-			resizeSlide();
+		private function viewedRegionChangeHandler(x:Number, y:Number, widthPercent:Number, heightPercent:Number):void {
+			resetSize(x, y, widthPercent, heightPercent);
 		}
 		
-		private function resizeSlide():void {
-			_slideModel.calculateViewportNeededForRegion();
-			_slideModel.displayViewerRegion();
+		private function handleLoadingComplete(e:Event):void {
+			_slideModel.resetForNewSlide(view.slide.contentWidth, view.slide.contentHeight);
+			var currentSlide:Slide = userSession.presentationList.currentPresentation.getSlideAt(_currentSlideNum);
+			if (currentSlide) {
+				resetSize(currentSlide.x, currentSlide.y, currentSlide.widthPercent, currentSlide.heightPercent);
+			}
+		}
+		
+		private function resetSize(x:Number, y:Number, widthPercent:Number, heightPercent:Number):void {
+			_slideModel.calculateViewportNeededForRegion(widthPercent, heightPercent);
+			_slideModel.displayViewerRegion(x, y, widthPercent, heightPercent);
 			_slideModel.calculateViewportXY();
 			_slideModel.displayPresenterView();
 			setViewportSize();
 			fitLoaderToSize();
-			fitSlideToLoader();
+			//fitSlideToLoader();
+			zoomCanvas(view.slide.x, view.slide.y, view.slide.width, view.slide.height, 1/Math.max(widthPercent/100, heightPercent/100));
 		}
 		
 		private function setViewportSize():void {
@@ -91,25 +100,13 @@ package org.bigbluebutton.view.navigation.pages.presentation
 		
 		private function fitLoaderToSize():void {
 			view.slide.x = _slideModel.loaderX;
-			view.slide.y = _slideModel.loaderY+40;
+			view.slide.y = _slideModel.loaderY;
 			view.slide.width = _slideModel.loaderW;
 			view.slide.height = _slideModel.loaderH;
 		}
 		
-		private function fitSlideToLoader():void {
-			if (view.slide.source == null) return;
-			view.slide.content.x = view.slide.x;
-			view.slide.content.y = view.slide.y;
-			view.slide.content.width = view.slide.width;
-			view.slide.content.height = view.slide.height;
-			zoomCanvas(view.slide.width, view.slide.height, 1.0);
-		}
-		
-		public function zoomCanvas(width:Number, height:Number, zoom:Number):void{
-			//whiteboardCanvasHolder.x = slideLoader.x * SlideCalcUtil.MYSTERY_NUM;
-			//whiteboardCanvasHolder.y = slideLoader.y * SlideCalcUtil.MYSTERY_NUM;
-			
-			view.whiteboardCanvas.moveCanvas(view.slide.x, view.slide.y-40, width, height, zoom);
+		public function zoomCanvas(x:Number, y:Number, width:Number, height:Number, zoom:Number):void{
+			view.whiteboardCanvas.moveCanvas(x, y, width, height, zoom);
 		}
 		
 		private function resizeWhiteboard():void {
@@ -150,7 +147,8 @@ package org.bigbluebutton.view.navigation.pages.presentation
 			view.slide.removeEventListener(Event.COMPLETE, handleLoadingComplete);
 			
 			userSession.presentationList.presentationChangeSignal.remove(presentationChangeHandler);
-			
+			userSession.presentationList.slideChangeSignal.remove(slideChangeHandler);
+			userSession.presentationList.viewedRegionChangeSignal.remove(viewedRegionChangeHandler);
 			super.destroy();
 			
 			view.dispose();

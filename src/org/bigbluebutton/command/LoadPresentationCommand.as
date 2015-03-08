@@ -18,6 +18,9 @@ package org.bigbluebutton.command
 		[Inject]
 		public var presentationName: String;
 		
+		[Inject]
+		public var currentSlideNum: int;
+		
 		private var _loadPresentationService:LoadPresentationService;
 		
 		override public function execute():void {
@@ -26,7 +29,7 @@ package org.bigbluebutton.command
 			if (p != null) {
 				if (p.loaded) {
 					trace("LoadPresentationCommand: presentation " + presentationName + " is already loaded");
-					p.finishedLoading();
+					p.finishedLoading(currentSlideNum);
 					return;
 				}
 				
@@ -36,7 +39,7 @@ package org.bigbluebutton.command
 				var slideUri:String = host + "/bigbluebutton/presentation/" + conferenceParameters.conference + "/" + conferenceParameters.room + "/" + presentationName;
 				
 				trace("LoadPresentationCommand::loadPresentation()... " + fullUri);
-				_loadPresentationService = new LoadPresentationService();
+				_loadPresentationService = new LoadPresentationService(currentSlideNum);
 				_loadPresentationService.load(fullUri, slideUri, p);
 				trace('number of slides=' + p.slides.length);
 			} else {

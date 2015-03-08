@@ -9,7 +9,7 @@ package org.bigbluebutton.command
 			/**
 			 * @1 presentation name
 			 */
-			super(String);
+			super(String, int);
 		}
 	}
 }

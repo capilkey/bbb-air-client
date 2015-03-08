@@ -13,9 +13,11 @@ package org.bigbluebutton.core
 		private var _urlLoader:URLLoader;
 		private var _slideURI:String;
 		private var _presentation:Presentation;
+		private var _currentSlideNum:int = 0;
 		
-		public function LoadPresentationService()
+		public function LoadPresentationService(currentSlideNum:int)
 		{
+			_currentSlideNum = currentSlideNum;
 		}
 		
 		public function load(url:String, slideURI:String, presentation:Presentation):void {
@@ -62,7 +64,7 @@ package org.bigbluebutton.core
 			
 			if (_presentation.size() > 0) {
 				trace("The presentation has loaded: " + _presentation.fileName);
-				_presentation.finishedLoading();
+				_presentation.finishedLoading(_currentSlideNum);
 			} else {
 				trace("The presentation failed to load: " + _presentation.fileName);
 			}

@@ -26,7 +26,7 @@ package org.bigbluebutton.view.navigation.pages.whiteboard
 			this.height = height;
 			
 			if (_resizeCallback != null)
-				callLater(_resizeCallback);
+				callLater(_resizeCallback, [zoom]);
 		}
 		
 		public function dispose():void

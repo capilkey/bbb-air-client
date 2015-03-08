@@ -27,7 +27,7 @@ package org.bigbluebutton.core
 		private var _disconnected:ISignal = new Signal();
 		
 		private var _sharedObjectName:String;
-		private var _sharedObject:SharedObject;
+		protected var _sharedObject:SharedObject;
 		private var _disconnectRequested:Boolean;
 		
 		public function BaseServiceSO(sharedObjectName:String) {

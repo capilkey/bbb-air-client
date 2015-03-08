@@ -16,7 +16,7 @@ package org.bigbluebutton.model.presentation
 		
 		private var _presentationChangeSignal:ISignal = new Signal();
 		private var _slideChangeSignal:ISignal = new Signal();
-		
+		private var _viewedRegionChangeSignal:ISignal = new Signal();
 		private var _cursorUpdateSignal:ISignal = new Signal();
 		
 		private var _annotationHistorySignal:ISignal = new Signal();
@@ -86,22 +86,33 @@ package org.bigbluebutton.model.presentation
 		
 		public function clearAnnotations():void {
 			if (_currentPresentation != null && _currentSlideNum >= 0) {
-				_currentPresentation.getSlideAt(_currentSlideNum).clearAnnotations();
-				_annotationClearSignal.dispatch();
+				if (_currentPresentation.clearAnnotations(_currentSlideNum)) {
+					_annotationClearSignal.dispatch();
+				}
 			}
 		}
 		
 		public function undoAnnotation():void {
 			if (_currentPresentation != null && _currentSlideNum >= 0) {
-				var removedAnnotation:IAnnotation = _currentPresentation.getSlideAt(_currentSlideNum).undoAnnotation();
+				var removedAnnotation:IAnnotation = _currentPresentation.undoAnnotation(_currentSlideNum);
 				if (removedAnnotation != null) {
 					_annotationUndoSignal.dispatch(removedAnnotation);
 				}
 			}
 		}
 		
-		private function changeCurrentPresentation(p:Presentation):void {
+		public function setViewedRegion(x:Number, y:Number, widthPercent:Number, heightPercent:Number):void {
+			if (_currentPresentation != null && _currentSlideNum >= 0) {
+				if (_currentPresentation.setViewedRegion(_currentSlideNum, x, y, widthPercent, heightPercent)) {
+					_viewedRegionChangeSignal.dispatch(x, y, widthPercent, heightPercent);
+				}
+				
+			}
+		}
+		
+		private function changeCurrentPresentation(p:Presentation, currentSlideNum:int):void {
 			currentPresentation = p;
+			this.currentSlideNum = currentSlideNum;
 		}
 		
 		public function get currentPresentation():Presentation {
@@ -110,8 +121,7 @@ package org.bigbluebutton.model.presentation
 		
 		public function set currentPresentation(p:Presentation):void {
 			trace("PresentationList changing current presentation");
-			_currentPresentation = p
-			currentSlideNum = 0;
+			_currentPresentation = p;
 			_presentationChangeSignal.dispatch();
 		}
 		
@@ -120,9 +130,11 @@ package org.bigbluebutton.model.presentation
 		}
 		
 		public function set currentSlideNum(n:int):void {
-			trace("PresentationList changing current slide");
-			_currentSlideNum = n;
-			_slideChangeSignal.dispatch();
+			if (_currentPresentation != null) {
+				trace("PresentationList changing current slide");
+				_currentSlideNum = n;
+				_slideChangeSignal.dispatch();
+			}
 		}
 		
 		public function get presentationChangeSignal():ISignal {
@@ -131,6 +143,10 @@ package org.bigbluebutton.model.presentation
 		
 		public function get slideChangeSignal():ISignal {
 			return _slideChangeSignal;
+		}
+		
+		public function get viewedRegionChangeSignal():ISignal {
+			return _viewedRegionChangeSignal;
 		}
 		
 		public function get cursorUpdateSignal():ISignal {

@@ -19,7 +19,9 @@ package org.bigbluebutton.view.navigation.pages.whiteboard
 		[Inject]
 		public var userSession: IUserSession;
 		
-		private var _cursor:CursorIndicator = new CursorIndicator();;
+		private var _cursor:CursorIndicator = new CursorIndicator();
+		
+		private var _zoom:Number = 1.0;
 		
 		override public function initialize():void {
 			Log.getLogger("org.bigbluebutton").info(String(this));
@@ -59,7 +61,9 @@ package org.bigbluebutton.view.navigation.pages.whiteboard
 			_cursor.update(view, xPercent, yPercent);
 		}
 		
-		private function onWhiteboardResize():void {
+		private function onWhiteboardResize(zoom:Number):void {
+			trace("whiteboard zoom = " + zoom);
+			_zoom = zoom;
 			drawAllAnnotations();
 		}
 		
@@ -67,7 +71,7 @@ package org.bigbluebutton.view.navigation.pages.whiteboard
 			var annotations:Array = userSession.presentationList.currentPresentation.getSlideAt(userSession.presentationList.currentSlideNum).annotations;
 			for (var i:int = 0; i < annotations.length; i++) {
 				var an:IAnnotation = annotations[i] as IAnnotation;
-				an.draw(view, 1);
+				an.draw(view, _zoom);
 			}
 		}
 		

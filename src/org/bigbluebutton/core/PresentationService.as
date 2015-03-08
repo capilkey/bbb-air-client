@@ -27,6 +27,10 @@ package org.bigbluebutton.core
 			userSession.mainConnection.addMessageListener(_presentMessageReceiver as IMessageListener);
 		}
 		
+		public function queryPresenterForSlideInfo():void {
+			presentServiceSO.queryPresenterForSlideInfo();
+		}
+		
 		public function disconnect():void {
 			presentServiceSO.disconnect();
 			userSession.mainConnection.removeMessageListener(_presentMessageReceiver as IMessageListener);

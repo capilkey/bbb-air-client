@@ -41,9 +41,9 @@ package org.bigbluebutton.model.presentation
 			return _slides.length;
 		}
 		
-		public function finishedLoading():void {
+		public function finishedLoading(currentSlideNum:int):void {
 			_loaded = true;
-			_changePresentation(this);
+			_changePresentation(this, currentSlideNum);
 		}
 		
 		public function get loaded():Boolean {
@@ -76,6 +76,32 @@ package org.bigbluebutton.model.presentation
 				}
 			}
 			return null;
+		}
+		
+		public function clearAnnotations(slideNum:int):Boolean {
+			var slide:Slide = getSlideAt(slideNum);
+			if (slide != null) {
+				slide.clearAnnotations();
+				return true;
+			}
+			return false;
+		}
+		
+		public function undoAnnotation(slideNum:int):IAnnotation {
+			var slide:Slide = getSlideAt(slideNum);
+			if (slide != null) {
+				return slide.undoAnnotation()
+			}
+			return null;
+		}
+		
+		public function setViewedRegion(slideNum:Number, x:Number, y:Number, widthPercent:Number, heightPercent:Number):Boolean {
+			var slide:Slide = getSlideAt(slideNum);
+			if (slide != null) {
+				slide.setViewedRegion(x, y, widthPercent, heightPercent);
+				return true;
+			}
+			return false;
 		}
 	}
 }

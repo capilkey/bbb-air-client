@@ -43,9 +43,9 @@ package org.bigbluebutton.view.navigation.pages.presentation
 			viewportH = _parentH = parentH;
 		}
 		
-		public function calculateViewportNeededForRegion():void {			
-			var vrwp:Number = _pageOrigW * (_viewedRegionW/HUNDRED_PERCENT);
-			var vrhp:Number = _pageOrigH * (_viewedRegionH/HUNDRED_PERCENT);
+		public function calculateViewportNeededForRegion(regionW:Number, regionH:Number):void {			
+			var vrwp:Number = _pageOrigW * (regionW/HUNDRED_PERCENT);
+			var vrhp:Number = _pageOrigH * (regionH/HUNDRED_PERCENT);
 			
 			if (_parentW < _parentH) {
 				viewportW = _parentW;
@@ -64,11 +64,11 @@ package org.bigbluebutton.view.navigation.pages.presentation
 			}
 		}
 		
-		public function displayViewerRegion():void {
-			_calcPageW = viewportW/(_viewedRegionW/HUNDRED_PERCENT);
-			_calcPageH = viewportH/(_viewedRegionH/HUNDRED_PERCENT);
-			_calcPageX = (_viewedRegionX/HUNDRED_PERCENT) * _calcPageW;
-			_calcPageY = (_viewedRegionY/HUNDRED_PERCENT) * _calcPageH;
+		public function displayViewerRegion(x:Number, y:Number, regionW:Number, regionH:Number):void {
+			_calcPageW = viewportW/(regionW/HUNDRED_PERCENT);
+			_calcPageH = viewportH/(regionH/HUNDRED_PERCENT);
+			_calcPageX = (x/HUNDRED_PERCENT) * _calcPageW;
+			_calcPageY =  (y/HUNDRED_PERCENT) * _calcPageH;
 		}
 		
 		public function calculateViewportXY():void {

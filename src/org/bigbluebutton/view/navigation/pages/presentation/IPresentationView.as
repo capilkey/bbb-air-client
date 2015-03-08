@@ -8,6 +8,7 @@ package org.bigbluebutton.view.navigation.pages.presentation
 	import org.osflash.signals.ISignal;
 	
 	import spark.components.Group;
+	import spark.primitives.Rect;
 
 	public interface IPresentationView extends IView
 	{

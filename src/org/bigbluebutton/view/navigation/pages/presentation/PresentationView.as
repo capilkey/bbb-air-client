@@ -22,6 +22,7 @@ package org.bigbluebutton.view.navigation.pages.presentation
 	
 	import spark.components.Group;
 	import spark.components.Image;
+	import spark.primitives.Rect;
 	
 	
 	public class PresentationView extends PresentationViewBase implements IPresentationView

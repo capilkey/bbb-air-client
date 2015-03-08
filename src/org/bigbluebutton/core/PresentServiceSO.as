@@ -28,20 +28,7 @@ package org.bigbluebutton.core
 	import org.bigbluebutton.command.LoadPresentationSignal;
 	import org.bigbluebutton.model.IConferenceParameters;
 	import org.bigbluebutton.model.IUserSession;
-	
-	/*
-	import org.bigbluebutton.core.managers.UserManager;
-	import org.bigbluebutton.main.events.BBBEvent;
-	import org.bigbluebutton.main.events.MadePresenterEvent;
-	import org.bigbluebutton.main.model.users.BBBUser;
-	import org.bigbluebutton.main.model.users.Conference;
-	import org.bigbluebutton.modules.present.events.CursorEvent;
-	import org.bigbluebutton.modules.present.events.MoveEvent;
-	import org.bigbluebutton.modules.present.events.NavigationEvent;
-	import org.bigbluebutton.modules.present.events.RemovePresentationEvent;
-	import org.bigbluebutton.modules.present.events.UploadEvent;
-	import org.bigbluebutton.modules.present.events.ZoomEvent;
-	*/
+	import org.bigbluebutton.model.presentation.Slide;
 	
 	public class PresentServiceSO extends BaseServiceSO implements IPresentServiceSO
 	{
@@ -69,8 +56,6 @@ package org.bigbluebutton.core
 		private static const GENERATED_THUMBNAIL_KEY:String = "GENERATED_THUMBNAIL";
 		private static const CONVERSION_COMPLETED_KEY:String = "CONVERSION_COMPLETED";
 		
-		private var currentSlide:Number = -1;
-		
 		public function PresentServiceSO(){
 			super(SO_NAME);
 		}
@@ -80,14 +65,6 @@ package org.bigbluebutton.core
 			
 			syncReceived.add(syncHandler);
 			successConnected.add(connectionSuccessHandler);
-		}
-		
-		public function whatIsTheSlideInfo(userid:Number):void {
-			
-		}
-		
-		public function whatIsTheSlideInfoReply(userID:String, xOffset:Number, yOffset:Number, widthRatio:Number, heightRatio:Number):void{
-			
 		}
 		
 		/**
@@ -149,11 +126,6 @@ package org.bigbluebutton.core
 				widthRatio,
 				heightRatio
 			); //_netConnection.call
-			
-			presenterViewedRegionX = xOffset;
-			presenterViewedRegionY = yOffset;
-			presenterViewedRegionW = widthRatio;
-			presenterViewedRegionH = heightRatio;
 		}
 		
 		/**
@@ -164,23 +136,8 @@ package org.bigbluebutton.core
 		 */
 		public function moveCallback(xOffset:Number, yOffset:Number, widthRatio:Number, heightRatio:Number):void{
 			trace("moveCallback recieved");
-			/*
-			var e:MoveEvent = new MoveEvent(MoveEvent.MOVE);
-			e.xOffset = xOffset;
-			e.yOffset = yOffset;
-			e.slideToCanvasWidthRatio = widthRatio;
-			e.slideToCanvasHeightRatio = heightRatio;
-			dispatcher.dispatchEvent(e);
-			*/
+			userSession.presentationList.setViewedRegion(xOffset, yOffset, widthRatio, heightRatio);
 		}
-		
-		/***
-		 * A hack for the viewer to sync with the presenter. Have the viewer query the presenter for it's x,y,width and height info.
-		 */
-		private var presenterViewedRegionX:Number = 0;
-		private var presenterViewedRegionY:Number = 0;
-		private var presenterViewedRegionW:Number = 100;
-		private var presenterViewedRegionH:Number = 100;
 		
 		public function removePresentation(name:String):void {
 			trace("send removePresentation call");
@@ -241,9 +198,9 @@ package org.bigbluebutton.core
 						}
 						
 						if (result.presentation.sharing) {
-							currentSlide = Number(result.presentation.slide);
-							trace("The presenter has shared slides and showing slide " + currentSlide);
-							loadPresentationSignal.dispatch(result.presentation.currentPresentation);
+							trace("The presenter has shared slides and showing slide " + int(result.presentation.slide));
+							loadPresentationSignal.dispatch(result.presentation.currentPresentation, int(result.presentation.slide));
+							queryPresenterForSlideInfo();
 						}
 					},
 					// status - On error occurred
@@ -302,16 +259,9 @@ package org.bigbluebutton.core
 		public function gotoSlideCallback(page:Number):void {
 			trace("gotoSlideCallback received");
 			userSession.presentationList.currentSlideNum = int(page);
-		}
-		
-		public function getCurrentSlideNumber():void {
-			trace("getCurrentSlideNumber called");
-			if (currentSlide >= 0) {
-				/*
-				var e:NavigationEvent = new NavigationEvent(NavigationEvent.GOTO_PAGE)
-				e.pageNumber = currentSlide;
-				dispatcher.dispatchEvent(e);
-				*/
+			var slide:Slide = userSession.presentationList.currentPresentation.getSlideAt(int(page));
+			if (slide != null && !slide.sizeSynced) {
+				queryPresenterForSlideInfo();
 			}
 		}
 		
@@ -341,7 +291,7 @@ package org.bigbluebutton.core
 		public function sharePresentationCallback(presentationName:String, share:Boolean):void {
 			trace("sharePresentationCallback " + presentationName + "," + share);
 			if (share) {
-				loadPresentationSignal.dispatch(presentationName);
+				loadPresentationSignal.dispatch(presentationName, 0);
 			} else {
 				//dispatcher.dispatchEvent(new UploadEvent(UploadEvent.CLEAR_PRESENTATION));
 			}
@@ -432,6 +382,29 @@ package org.bigbluebutton.core
 		
 		private function connectionSuccessHandler():void {
 			getPresentationInfo();
+		}
+		
+		public function queryPresenterForSlideInfo():void {
+			trace("Query for slide info");
+			_sharedObject.send("whatIsTheSlideInfo", userSession.userId);
+		}
+		
+		public function whatIsTheSlideInfo(userid:Number):void {
+		/*	LogUtil.debug("Rx Query for slide info");
+			if (UserManager.getInstance().getConference().amIPresenter) {
+				LogUtil.debug("User Query for slide info");
+				_presentationSO.send("whatIsTheSlideInfoReply", userid, presenterViewedRegionX, presenterViewedRegionY, presenterViewedRegionW, presenterViewedRegionH);
+			} */
+		}
+		
+		public function whatIsTheSlideInfoReply(userID:String, xOffset:Number, yOffset:Number, widthRatio:Number, heightRatio:Number):void{
+			trace("Rx whatIsTheSlideInfoReply");
+			// the presenter method is bugged and has the wrong parameter type so check doesn't work
+			//if (userSession.userId == userID) {
+				trace("Got reply for Query for slide info");
+				userSession.presentationList.setViewedRegion(xOffset, yOffset, widthRatio, heightRatio);			
+			//}
+			
 		}
 	}
 }

@@ -19,6 +19,12 @@ package org.bigbluebutton.model.presentation
 		private var _swfFile:SWFLoader = new SWFLoader();
 		private var _annotations:Array = [];
 		
+		private var _x:Number = 0;
+		private var _y:Number = 0;
+		private var _widthPercent:Number = 100;
+		private var _heightPercent:Number = 100;
+		private var _sizeSynced:Boolean = false;
+		
 		private var _slideLoadedSignal:ISignal = new Signal;
 		
 		public function Slide(slideNum:Number, slideURI:String, thumbURI:String, txtURI:String) {
@@ -76,6 +82,26 @@ package org.bigbluebutton.model.presentation
 			return _annotations;
 		}
 		
+		public function get x():Number {
+			return _x;
+		}
+		
+		public function get y():Number {
+			return _y;
+		}
+		
+		public function get widthPercent():Number {
+			return _widthPercent;
+		}
+		
+		public function get heightPercent():Number {
+			return _heightPercent;
+		}
+		
+		public function get sizeSynced():Boolean {
+			return _sizeSynced;
+		}
+		
 		public function addAnnotation(annotation:IAnnotation):void {
 			trace("adding a new annotation");
 			_annotations.push(annotation);
@@ -105,6 +131,15 @@ package org.bigbluebutton.model.presentation
 			while (_annotations.length > 0) {
 				_annotations.pop();
 			}
+		}
+		
+		public function setViewedRegion(x:Number, y:Number, widthPercent:Number, heightPercent:Number):void {
+			_x = x;
+			_y = y;
+			_widthPercent = widthPercent;
+			_heightPercent = heightPercent;
+			
+			_sizeSynced = true;
 		}
 	}
 }
