@@ -2,6 +2,8 @@ package org.bigbluebutton.view.navigation.pages.presentation
 {
 	public class SlideModel
 	{
+		public static const MYSTERY_NUM:Number = 2;
+		
 		public static const MAX_ZOOM_PERCENT:Number = 400;
 		public static const HUNDRED_PERCENT:Number = 100;
 		
@@ -67,8 +69,14 @@ package org.bigbluebutton.view.navigation.pages.presentation
 		public function displayViewerRegion(x:Number, y:Number, regionW:Number, regionH:Number):void {
 			_calcPageW = viewportW/(regionW/HUNDRED_PERCENT);
 			_calcPageH = viewportH/(regionH/HUNDRED_PERCENT);
-			_calcPageX = (x/HUNDRED_PERCENT) * _calcPageW;
-			_calcPageY =  (y/HUNDRED_PERCENT) * _calcPageH;
+			_calcPageX = (x/HUNDRED_PERCENT) * _calcPageW * MYSTERY_NUM;
+			_calcPageY = (y/HUNDRED_PERCENT) * _calcPageH * MYSTERY_NUM;
+			
+			/**
+			 * I have no idea why I need to multiply the x and y percentages by 2, but I 
+			 * do. I think it is a bug in 0.81, but I can't change that.
+			 *     - capilkey March 11, 2015
+			 */
 		}
 		
 		public function calculateViewportXY():void {

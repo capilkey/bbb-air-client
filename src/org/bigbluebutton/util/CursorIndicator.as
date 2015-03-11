@@ -5,6 +5,7 @@ package org.bigbluebutton.util
 	
 	import org.bigbluebutton.view.navigation.pages.whiteboard.IWhiteboardCanvas;
 	
+	import spark.components.Group;
 	import spark.primitives.Ellipse;
 	import spark.primitives.supportClasses.GraphicElement;
 	
@@ -24,7 +25,7 @@ package org.bigbluebutton.util
 			super();
 		}
 		
-		public function draw(canvas:IWhiteboardCanvas, newX:Number, newY:Number):void {
+		public function draw(canvas:Group, newX:Number, newY:Number):void {
 			if (!_indicator) {
 				_indicator = new Ellipse();
 			}
@@ -46,11 +47,11 @@ package org.bigbluebutton.util
 			}
 		}
 		
-		public function redraw(canvas:IWhiteboardCanvas):void {
+		public function redraw(canvas:Group):void {
 			draw(canvas, _x, _y);
 		}
 		
-		public function remove(canvas:IWhiteboardCanvas):void {
+		public function remove(canvas:Group):void {
 			if (canvas.containsElement(_indicator)) {
 				canvas.removeElement(_indicator);
 			}

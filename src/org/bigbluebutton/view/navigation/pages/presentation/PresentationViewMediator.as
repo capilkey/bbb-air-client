@@ -10,6 +10,7 @@ package org.bigbluebutton.view.navigation.pages.presentation
 	import org.bigbluebutton.model.IUserSession;
 	import org.bigbluebutton.model.presentation.Presentation;
 	import org.bigbluebutton.model.presentation.Slide;
+	import org.bigbluebutton.util.CursorIndicator;
 	import org.osmf.logging.Log;
 	
 	import robotlegs.bender.bundles.mvcs.Mediator;
@@ -29,6 +30,7 @@ package org.bigbluebutton.view.navigation.pages.presentation
 		private var _currentSlideNum:int = -1;
 		private var _currentSlide:Slide;
 		private var _slideModel:SlideModel = new SlideModel();
+		private var _cursor:CursorIndicator = new CursorIndicator();
 		
 		override public function initialize():void
 		{
@@ -37,6 +39,7 @@ package org.bigbluebutton.view.navigation.pages.presentation
 			userSession.presentationList.presentationChangeSignal.add(presentationChangeHandler);
 			userSession.presentationList.slideChangeSignal.add(slideChangeHandler);
 			userSession.presentationList.viewedRegionChangeSignal.add(viewedRegionChangeHandler);
+			userSession.presentationList.cursorUpdateSignal.add(cursorUpdateHandler);
 			
 			view.slide.addEventListener(Event.COMPLETE, handleLoadingComplete);
 			
@@ -116,12 +119,17 @@ package org.bigbluebutton.view.navigation.pages.presentation
 			view.whiteboardCanvas.y = view.slide.y;
 		}
 		
+		private function cursorUpdateHandler(xPercent:Number, yPercent:Number):void {
+			_cursor.draw(view.viewport, xPercent, yPercent);
+		}
+		
 		private function presentationChangeHandler():void {
 			setPresentation(userSession.presentationList.currentPresentation);
 		}
 		
 		private function slideChangeHandler():void {
 			setCurrentSlideNum(userSession.presentationList.currentSlideNum);
+			_cursor.remove(view.viewport);
 		}
 		
 		private function setPresentation(p:Presentation):void {
@@ -149,6 +157,8 @@ package org.bigbluebutton.view.navigation.pages.presentation
 			userSession.presentationList.presentationChangeSignal.remove(presentationChangeHandler);
 			userSession.presentationList.slideChangeSignal.remove(slideChangeHandler);
 			userSession.presentationList.viewedRegionChangeSignal.remove(viewedRegionChangeHandler);
+			userSession.presentationList.cursorUpdateSignal.remove(cursorUpdateHandler);
+			
 			super.destroy();
 			
 			view.dispose();

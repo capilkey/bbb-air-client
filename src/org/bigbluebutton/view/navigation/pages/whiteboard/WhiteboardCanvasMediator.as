@@ -1,15 +1,10 @@
 package org.bigbluebutton.view.navigation.pages.whiteboard
 {
-	import flash.display.Sprite;
-	
 	import org.bigbluebutton.model.IUserSession;
 	import org.bigbluebutton.model.whiteboard.IAnnotation;
-	import org.bigbluebutton.util.CursorIndicator;
 	import org.osmf.logging.Log;
 	
 	import robotlegs.bender.bundles.mvcs.Mediator;
-	
-	import spark.components.Group;
 	
 	public class WhiteboardCanvasMediator extends Mediator
 	{
@@ -18,8 +13,6 @@ package org.bigbluebutton.view.navigation.pages.whiteboard
 		
 		[Inject]
 		public var userSession: IUserSession;
-		
-		private var _cursor:CursorIndicator = new CursorIndicator();
 		
 		private var _zoom:Number = 1.0;
 		
@@ -31,7 +24,6 @@ package org.bigbluebutton.view.navigation.pages.whiteboard
 			userSession.presentationList.annotationUndoSignal.add(annotationUndoHandler);
 			userSession.presentationList.annotationClearSignal.add(annotationClearHandler);
 			userSession.presentationList.slideChangeSignal.add(slideChangeHandler);
-			userSession.presentationList.cursorUpdateSignal.add(cursorUpdateHandler);
 			
 			view.resizeCallback = onWhiteboardResize;
 		}
@@ -54,19 +46,12 @@ package org.bigbluebutton.view.navigation.pages.whiteboard
 		
 		private function slideChangeHandler():void {
 			removeAllAnnotations();
-			_cursor.remove(view);
-		}
-		
-		private function cursorUpdateHandler(xPercent:Number, yPercent:Number):void {
-			_cursor.draw(view, xPercent, yPercent);
 		}
 		
 		private function onWhiteboardResize(zoom:Number):void {
 			trace("whiteboard zoom = " + zoom);
 			_zoom = zoom;
 			drawAllAnnotations();
-			
-			_cursor.redraw(view);
 		}
 		
 		private function drawAllAnnotations():void {
@@ -88,7 +73,6 @@ package org.bigbluebutton.view.navigation.pages.whiteboard
 			userSession.presentationList.annotationUndoSignal.remove(annotationUndoHandler);
 			userSession.presentationList.annotationClearSignal.remove(annotationClearHandler);
 			userSession.presentationList.slideChangeSignal.remove(slideChangeHandler);
-			userSession.presentationList.cursorUpdateSignal.remove(cursorUpdateHandler);
 
 			super.destroy();
 			
