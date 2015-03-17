@@ -33,7 +33,7 @@ package org.bigbluebutton.util
 					return new LineAnnotation(an.type, an.id, an.presentationID, an.pageNumber-1, an.status, an.color, an.thickness, an.transparency, an.points);
 					break;
 				case AnnotationType.TEXT:
-					return new TextAnnotation(an.type, an.id, an.presentationID, an.pageNumber-1, an.status, an.fontColor, an.fontSize, an.calcedFontSize, an.dataPoints, an.textBoxHeight, an.textBoxWidth, an.x, an.y);
+					return new TextAnnotation(an.type, an.id, an.presentationID, an.pageNumber-1, an.status, an.fontColor, an.fontSize, an.calcedFontSize, an.dataPoints, an.textBoxHeight, an.textBoxWidth, an.x, an.y, an.text);
 					break;
 				default:
 					return null;

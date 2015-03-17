@@ -1,5 +1,11 @@
 package org.bigbluebutton.model.whiteboard
 {
+	import flash.text.AntiAliasType;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
+	
+	import flashx.textLayout.formats.VerticalAlign;
+	
 	import org.bigbluebutton.view.navigation.pages.whiteboard.IWhiteboardCanvas;
 	
 	import spark.components.RichText;
@@ -19,8 +25,11 @@ package org.bigbluebutton.model.whiteboard
 		private var _textBoxWidth:Number;
 		private var _x:Number;
 		private var _y:Number;
+		private var _text:String;
 		
-		public function TextAnnotation(type:String, anID:String, presentationID:String, pageNumber:int, status:String, color:Number, fontSize:Number, calcedFontSize:Number, dataPoints:String, textBoxHeight:Number, textBoxWidth:Number, x:Number, y:Number) {
+		private var _richText:RichText;
+		
+		public function TextAnnotation(type:String, anID:String, presentationID:String, pageNumber:int, status:String, color:Number, fontSize:Number, calcedFontSize:Number, dataPoints:String, textBoxHeight:Number, textBoxWidth:Number, x:Number, y:Number, text:String) {
 			_type = type;
 			_anID = anID;
 			_presentationID = presentationID;
@@ -35,6 +44,7 @@ package org.bigbluebutton.model.whiteboard
 			_textBoxWidth = textBoxWidth;
 			_x = x;
 			_y = y;
+			_text = text;
 		}
 		
 		public function get type():String{
@@ -59,11 +69,56 @@ package org.bigbluebutton.model.whiteboard
 		
 		public function get color():Number {
 			return _color;
-		}		
+		}
+		
+		public function get fontSize():Number {
+			return _fontSize;
+		}
+		
+		public function get calcedFontSize():Number {
+			return _calcedFontSize;
+		}
+		
+		public function get dataPoints():String {
+			return _dataPoints;
+		}
+		
+		public function get textBoxHeight():Number {
+			return _textBoxHeight;
+		}
+		
+		public function get textBoxWidth():Number {
+			return _textBoxWidth;
+		}
+		
+		public function get x():Number {
+			return _x;
+		}
+		
+		public function get y():Number {
+			return _y;
+		}
+		
+		public function get text():String {
+			return _text;
+		}
 		
 		public function update(an:IAnnotation):void {
 			if (an.anID == this.anID) {
+				_type = an.type;
+				_presentationID = an.presentationID;
+				_pageNumber = an.pageNumber;
+				_status = an.status;
 				_color = an.color;
+				
+				_fontSize = TextAnnotation(an).fontSize;
+				_calcedFontSize = TextAnnotation(an).calcedFontSize;
+				_dataPoints = TextAnnotation(an).dataPoints;
+				_textBoxHeight = TextAnnotation(an).textBoxHeight;
+				_textBoxWidth = TextAnnotation(an).textBoxWidth;
+				_x = TextAnnotation(an).x;
+				_y = TextAnnotation(an).y;
+				_text = TextAnnotation(an).text;
 			}
 		}
 		
@@ -76,11 +131,31 @@ package org.bigbluebutton.model.whiteboard
 		}
 		
 		public function draw(canvas:IWhiteboardCanvas, zoom:Number):void {
+			if (!_richText) {
+				_richText = new RichText();
+			} 
 			
+			_richText.text = _text;
+			trace("text: = " + _text);
+			_richText.setStyle("fontSize", zoom * _fontSize);
+			_richText.setStyle("fontFamily", "Arial");
+			_richText.setStyle("color", _color);
+			_richText.setStyle("verticalAlign", VerticalAlign.TOP);
+			
+			_richText.x = denormalize(_x, canvas.width);
+			_richText.y = denormalize(_y, canvas.height);  
+			_richText.width = denormalize(_textBoxWidth, canvas.width);
+			_richText.height = denormalize(_textBoxHeight, canvas.height);
+			
+			if (!canvas.containsElement(_richText)) {
+				canvas.addElement(_richText);
+			}
 		}
 		
 		public function remove(canvas:IWhiteboardCanvas):void {
-			
+			if (!!_richText && canvas.containsElement(_richText)) {
+				canvas.removeElement(_richText);
+			}
 		}
 	}
 }
